@@ -1,4 +1,5 @@
-import { RouteRecordRaw, createRouter, createWebHistory } from "vue-router";
+import {RouteRecordRaw, createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized} from "vue-router";
+import {generaMenu} from "@/utils/menu.ts";
 
 
 const routes: Array<RouteRecordRaw> = [
@@ -8,8 +9,8 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("../views/login/Login.vue")
     },
     {
-        path: "",
-        name: "index",
+        path: "/",
+        name: "Layout",
         component: () => import("../components/layout/index.vue"),
     },
 ]
@@ -17,6 +18,23 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes
+})
+
+
+
+let status = true;
+
+router.beforeEach(async (
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized,
+    next: NavigationGuardNext
+) => {
+    if (status) {
+        status = false;
+        await generaMenu();
+        return next(to.path);
+    }
+    next();
 })
 
 // export function resetRouter() {

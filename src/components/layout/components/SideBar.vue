@@ -28,7 +28,7 @@
           </el-sub-menu>
         </template>
         <!-- 一级菜单 -->
-        <template v-if="route.type === 3">
+        <template v-if="route.type === 2">
           <el-menu-item :index="route.path" :key="route.path">
             <i :class="route.icon"/>
             <span slot="title">{{ route.name }}</span>

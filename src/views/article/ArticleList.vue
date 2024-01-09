@@ -1,6 +1,6 @@
 <template>
   <div>
-    setting
+    文章列表
   </div>
 </template>
 

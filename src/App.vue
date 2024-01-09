@@ -10,13 +10,6 @@
 
 <script setup lang="ts">
 
-import {onBeforeMount} from "vue";
-import {generaMenu} from "@/utils/menu.ts";
-
-onBeforeMount(() => {
-  generaMenu();
-})
-
 </script>
 
 <style scoped>

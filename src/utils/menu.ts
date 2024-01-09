@@ -2,87 +2,119 @@ import api from "@/api";
 import router from "@/router/index.ts"
 import {useStore} from "@/store";
 import {MenuDataInterface} from "@/d.ts/api";
-import Layout from "@/components/layout/index.vue";
 
-export const generaMenu = () => {
+let menuLoaded = false;
+
+export const generaMenu = async () => {
+    console.log("加载菜单...");
     const store = useStore();
-    api.listUserMenus().then(({data}) => {
-        let menuList: Array<MenuDataInterface> = data;
-        menuList.forEach(item => {
-            if (item.icon != null) {
-                item.icon = "iconfont " + item.icon;
-            }
-            if (item.type === 1) {
-                item.component = Layout;
-            }
-            if (item.type === 3) {
-                item.component = loadView(item.component);
-            }
-            if (item.children && item.children.length > 0) {
-                item.children.forEach(route => {
-                    if (route) {
-                        route.icon = "iconfont " + route.icon;
-                        route.component = loadView(route.component);
-                    }
-                });
-            }
-        })
-        // 添加侧边栏菜单
-        store.saveUserMenuList(menuList);
-        // 添加菜单到路由
-        // const routes: Array<RouteRecordRaw> = menuList.map((item) => {
-        //     const route: RouteRecordRaw = {
-        //         path: item.path,
-        //         component: item.component,
-        //         children: item.children?.map((childRoute) => ({
-        //             path: childRoute.path,
-        //             component: childRoute.component,
-        //         })),
-        //     };
-        //
-        //     return route;
-        // });
-        //
-        // console.log(routes)
-        //
-        // routes.forEach((route) => {
-        //     router.addRoute("/index", route);
-        // });
-        dealWithRoute(menuList);
-    })
-}
-
-const dealWithRoute = (data: Array<MenuDataInterface>, parent = 'index') => {
-    for (const item of data) {
-        // 多级菜单
-        if (item.children && item.children.length > 0) {
-            router.addRoute(parent, {
-                path: item.path,
-                name: item.path.split('/')[1],
-                component: Layout,
-                meta: {
-                    title: item.name,
-                    // requiresAuth: true
+    if (!menuLoaded) {
+        try {
+            const { data } = await api.listUserMenus();
+            let menuList: Array<MenuDataInterface> = data;
+            menuList.forEach(item => {
+                if (item.icon != null) {
+                    item.icon = "iconfont " + item.icon;
                 }
-            })
-            dealWithRoute(item.children, item.path.split('/')[1])
-
-        } else {  // 一级菜单
-            router.addRoute(parent, {
-                path: item.path,
-                name: item.name,
-                component: item.component,
-                meta: {
-                    title: item.name,
-                    // requiresAuth: true
+                if (item.children && item.children.length > 0) {
+                    item.children.forEach(route => {
+                        if (route) {
+                            route.icon = "iconfont " + route.icon;
+                        }
+                    });
                 }
             });
+            // 添加侧边栏菜单
+            store.saveUserMenuList(menuList);
+            // 添加菜单到路由
+            dealWithRoute(menuList);
+            console.log("菜单加载完成...");
+            menuLoaded = true;
+        } catch (error) {
+            console.error("加载菜单失败:", error);
         }
     }
 };
 
+const dealWithRoute = (data: Array<MenuDataInterface>) => {
+    data.forEach((item) => {
+        if (item.type === 1 && item.children && item.children.length > 0) {
+            item.children.forEach((children) => {
+                createRouterTemplate('Layout', children);
+            })
+        }
+        if (item.type === 2 && !item.parentId) {
+            createRouterTemplate('Layout', item);
+        }
+    });
+}
+
+function createRouterTemplate(parent: string, item: MenuDataInterface) {
+    router.addRoute(parent,{
+        path: item.path,
+        name: item.name,
+        component: () => import(`../views${item.component}`),
+        meta: {
+            title: item.name,
+            requiresAuth: true,
+        }
+    });
+}
+
+
+// const dealWithRoute = (data: Array<MenuDataInterface>, parent = '') => {
+//     for (const item of data) {
+//         // 一级目录
+//         if (item.type === 1 && item.children && item.children.length > 0) {
+//             router.addRoute(parent,{
+//                 path: item.path,
+//                 name: item.name,
+//                 component: Layout,
+//                 children: [],
+//                 meta: {
+//                     title: item.name,
+//                     requiresAuth: true
+//                 }
+//             });
+//             dealWithRoute(item.children, item.name);
+//         } else {
+//             // 二级菜单
+//             if (item.type === 2 && item.parentId) {
+//                 router.addRoute(parent, {
+//                     path: item.path,
+//                     name: item.name,
+//                     component: () => import(`../views${item.component}`),
+//                     meta: {
+//                         title: item.name,
+//                         requiresAuth: true
+//                     }
+//                 });
+//             }
+//             // 一级菜单
+//             if (item.type === 2 && item.parentId === null) {
+//                 router.addRoute(parent, {
+//                     path: item.path,
+//                     // name: item.name,
+//                     component: Layout,
+//                     children: [
+//                         {
+//                             path: "/",
+//                             name: item.name,
+//                             component: () => import(`../views${item.component}`),
+//                             meta: {
+//                                 title: item.name,
+//                                 requiresAuth: true
+//                             }
+//                         }
+//                     ],
+//                 });
+//             }
+//         }
+//     }
+// };
+
 export const loadView = (view: string) => {
     // 路由懒加载
     // return (resolve) => require([`@/views${view}`], resolve);
-    return import((`../views${view}`))
+    return () => import(`../views${view}`)
 };
