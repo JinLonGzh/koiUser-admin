@@ -1,26 +1,28 @@
 import {BuildGetUrlType, BuildMixGetUrlType} from "@/d.ts/utils/request";
 
 
-let buildParamUrl: BuildGetUrlType = (baseUrl, req) => {
-    if (req == null) return baseUrl;
+const buildParamUrl: BuildGetUrlType = (baseUrl, params) => {
+    if (params) {
+        const serializedParams = Object.entries(params)
+            .map(([key, val]) => {
+                if (val === null || typeof val === 'undefined') {
+                    return '';
+                }
 
-    let url = baseUrl + "?";
-    let propertyList = Object.keys(req);
+                const adjustedKey = Array.isArray(val) ? key + '[]' : key;
+                const adjustedVal = Array.isArray(val) ? val : [val];
 
-    for (let i = 0; i < propertyList.length; i++) {
-        const propertyName = propertyList[i];
-        const propertyValue = req[propertyName];
+                return adjustedVal.map((v) => encodeURIComponent(adjustedKey) + '=' + encodeURIComponent(v)).join('&');
+            })
+            .filter(Boolean)
+            .join('&');
 
-        // 检查属性值是否为 null
-        if (propertyValue !== null && propertyValue !== undefined) {
-            url += propertyName + "=" + propertyValue;
-            // 检查是否是最后一个属性
-            if (i !== propertyList.length - 1 && req[propertyList[i + 1]] !== null && req[propertyList[i + 1]] !== undefined) {
-                url += "&";
-            }
+        if (serializedParams) {
+            baseUrl += (baseUrl.indexOf('?') === -1 ? '?' : '&') + serializedParams;
         }
     }
-    return url;
+
+    return baseUrl;
 };
 
 
@@ -33,9 +35,9 @@ let buildPathUrl: BuildGetUrlType = (url, req) => {
 };
 
 let buildMixUrl: BuildMixGetUrlType = (url, req) => {
-    if(req == null) return url;
-    if(req.param == null) return buildPathUrl(url, req.path);
-    if(req.path == null) return buildParamUrl(url, req.param);
+    if (req == null) return url;
+    if (req.param == null) return buildPathUrl(url, req.path);
+    if (req.path == null) return buildParamUrl(url, req.param);
     return buildParamUrl(
         buildPathUrl(url, req.path),
         req.param

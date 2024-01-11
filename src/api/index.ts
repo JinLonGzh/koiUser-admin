@@ -1,6 +1,9 @@
-import {AdminInterface, ApiObject, MenuInterface} from "@/d.ts/api";
-import {get, post} from "@/utils/request.ts";
-
+import {ApiObject} from "@/d.ts/api";
+import {del, get, post, put} from "@/utils/request.ts";
+import {MenuInterface} from "@/d.ts/api/menu";
+import {AdminInterface} from "@/d.ts/api/admin";
+import {ArticleInterface} from "@/d.ts/api/article";
+import {CategoryInterface} from "@/d.ts/api/category";
 
 
 const menuInterface: MenuInterface = {
@@ -18,9 +21,29 @@ const adminInterface: AdminInterface = {
     }
 }
 
+const articleInterface: ArticleInterface = {
+    pageArticle: async (req) => {
+        return await get("/blog/article/page", req);
+    },
+    updateArticleTop: async (req) => {
+        return await put("/blog/article/top", req);
+    },
+    deleteArticle: async (id) => {
+        return await del(`/blog/article/delete?id=${id}`)
+    }
+}
+
+const categoryInterface: CategoryInterface = {
+    getCategoryOption: async () => {
+        return await get("/blog/category/option");
+    }
+}
+
 const api: ApiObject = {
     ...menuInterface,
     ...adminInterface,
+    ...articleInterface,
+    ...categoryInterface
 }
 
 export default api;
