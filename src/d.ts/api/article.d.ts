@@ -4,6 +4,7 @@ export declare interface ArticleInterface {
     pageArticle: (req: ArticleQueryInterface) => Promise<CommonResult>;
     updateArticleTop: (req: ArticleTopInterface) => Promise<CommonResult>;
     deleteArticle: (id: number) => Promise<CommonResult>;
+    getArticleDetail: (id: number) => Promise<CommonResult>;
 }
 
 interface ArticleQueryInterface extends PageInterface {

@@ -21,7 +21,6 @@ const router = createRouter({
 })
 
 
-
 let status = true;
 
 router.beforeEach(async (
@@ -32,7 +31,12 @@ router.beforeEach(async (
     if (status) {
         status = false;
         await generaMenu();
-        return next(to.path);
+        return next({
+            path: to.path,
+            params: to.params,
+            query: to.query,
+            hash: to.hash
+        });
     }
     next();
 })

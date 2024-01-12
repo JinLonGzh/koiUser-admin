@@ -29,7 +29,10 @@ const articleInterface: ArticleInterface = {
         return await put("/blog/article/top", req);
     },
     deleteArticle: async (id) => {
-        return await del(`/blog/article/delete?id=${id}`)
+        return await del(`/blog/article/delete?id=${id}`);
+    },
+    getArticleDetail: async (id) => {
+        return await get(`/blog/article/detail?id=${id}`);
     }
 }
 

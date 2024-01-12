@@ -244,7 +244,10 @@
     <!-- 批量逻辑删除对话框 -->
     <el-dialog v-model="deleteFormVisible" width="30%">
       <div class="dialog-title-container" slot="title">
-        <el-icon><Warning style="color:#ff9900"/></el-icon>提示
+        <el-icon>
+          <Warning style="color:#ff9900"/>
+        </el-icon>
+        提示
       </div>
       <div style="font-size:1rem">是否删除选中项？</div>
       <template #footer>
@@ -257,7 +260,10 @@
     <!-- 批量导出对话框 -->
     <el-dialog v-model="exportFormVisible" width="30%">
       <div class="dialog-title-container" slot="title">
-        <el-icon><Warning style="color:#ff9900"/></el-icon>提示
+        <el-icon>
+          <Warning style="color:#ff9900"/>
+        </el-icon>
+        提示
       </div>
       <div style="font-size:1rem">是否导出选中文章？</div>
       <template #footer>
@@ -374,7 +380,12 @@ const changeTop = (article: ArticleDataInterface) => {
 }
 
 const editArticle = (id: number) => {
-  router.push({path: "/articles/" + id});
+  router.push({
+    path: "/updateArticle",
+    query: {
+      id: id
+    }
+  });
 }
 
 const deleteArticle = (id: number) => {
