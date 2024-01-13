@@ -12,8 +12,8 @@
           type="danger"
           size="default"
           class="save-btn"
-          @click="saveArticleDraft"
-          v-if="article.id == null || article.status === 2"
+          @click="saveOrUpdateArticleDraft"
+          v-if="article.id == null || article.status === ArticleStatusEnum.DRAFT"
       >
         保存草稿
       </el-button>
@@ -30,7 +30,7 @@
     <MdEditor
         ref="md"
         v-model="article.articleContent"
-        @onUploadImg="onUploadImg"
+        @onUploadImg="onUploadMdImg"
     />
     <!-- 添加文章对话框 -->
     <el-dialog
@@ -57,30 +57,16 @@
               placement="bottom-start"
               width="460"
               trigger="click"
+              title="分类"
               v-if="!article.categoryName"
           >
-            <div class="popover-title">分类</div>
-            <!-- 搜索框 -->
-            <el-autocomplete
-                style="width:100%"
-                v-model="article.categoryName"
-                :fetch-suggestions="searchCategories"
-                placeholder="请输入分类名搜索，enter可添加自定义分类"
-                :trigger-on-focus="false"
-                @keyup.enter.native="saveCategory"
-                @select="handleSelectCategories"
-            >
-              <template #default="item">
-                <div>{{ item.categoryName }}</div>
-              </template>
-            </el-autocomplete>
             <!-- 分类 -->
             <div class="popover-container">
               <div
                   v-for="item of categoryList"
                   :key="item.id"
                   class="category-item"
-                  @click="addCategory(item.name)"
+                  @click="addCategory(item)"
               >
                 {{ item.name }}
               </div>
@@ -147,32 +133,37 @@
 <script setup lang="ts">
 
 import {UploadFilled} from '@element-plus/icons-vue'
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {inject, onMounted, ref, watch} from "vue";
 import api from "@/api";
 import {ProcessInterface} from "@/d.ts/modules/process";
 import {MdEditor} from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
 import {OptionInterface} from "@/d.ts/api";
+import {ArticleStatusEnum} from "@/config/constant.ts";
+import {useStore} from "@/store";
 
 const componentKey = ref(0);
 const route = useRoute();
+const router = useRouter();
+const store = useStore();
 const $process = inject<ProcessInterface>("$process")!;
 
 const addOrEditVisible = ref(false);
+const autoSave = ref(false);
 
 const article = ref({
-  id: null,
-  articleTitle: new Date(),
-  categoryId: null,
-  categoryName: null,
+  id: null as number | null,
+  articleTitle: "",
+  categoryId: null as number | null,
+  categoryName: null as string | null,
   articleContent: "",
-  articleCover: "",
+  articleCover: "" as string,
   articleTop: 0,
   status: 0,
   viewCount: 0,
-  createTime: "",
-  updateTime: ""
+  createTime: null as string | null,
+  updateTime: null as string | null
 });
 const categoryList = ref<Array<OptionInterface>>([]);
 
@@ -191,13 +182,99 @@ onMounted(() => {
 })
 
 const listCategories = () => {
-  api.getCategoryOption().then(({data}) => {
+  api.getCategoryOption({
+    keywords: null
+  }).then(({data}) => {
     categoryList.value = data;
   })
 }
 
-const saveArticleDraft = () => {
-  $process.tipShow.success("成功");
+const saveOrUpdateArticleDraft = () => {
+  if (article.value.articleTitle.trim() == "") {
+    $process.tipShow.error("文章标题不能为空");
+    return false;
+  }
+  if (article.value.articleContent.trim() == "") {
+    $process.tipShow.error("文章内容不能为空");
+    return false;
+  }
+  article.value.status = ArticleStatusEnum.DRAFT;
+  if (article.value.id == null) {
+    // 添加
+    api.addArticle({
+      articleTitle: article.value.articleTitle,
+      categoryId: article.value.categoryId,
+      articleCover: article.value.articleCover,
+      articleContent: article.value.articleContent,
+      articleTop: article.value.articleTop,
+      articleStatus: article.value.status
+    }).then(() => {
+      $process.tipShow.success("保存草稿成功");
+      afterPublish();
+    })
+  } else {
+    // 更新
+    console.log("更新草稿");
+  }
+
+}
+
+const saveOrUpdateArticle = () => {
+  if (article.value.articleTitle.trim() == "") {
+    $process.tipShow.error("文章标题不能为空");
+    return false;
+  }
+  if (article.value.articleContent.trim() == "") {
+    $process.tipShow.error("文章内容不能为空");
+    return false;
+  }
+  if (article.value.categoryId == null) {
+    $process.tipShow.error("文章分类不能为空");
+    return false;
+  }
+  if (article.value.articleCover.trim() == "") {
+    $process.tipShow.error("文章封面不能为空");
+    return false;
+  }
+  if (article.value.id == null) {
+    // 添加
+    api.addArticle({
+      articleTitle: article.value.articleTitle,
+      categoryId: article.value.categoryId,
+      articleCover: article.value.articleCover,
+      articleContent: article.value.articleContent,
+      articleTop: article.value.articleTop,
+      articleStatus: article.value.status
+    }).then(() => {
+      $process.tipShow.success("发表文章成功");
+      afterPublish();
+    })
+  } else {
+    // 更新
+    api.updateArticle({
+      id: article.value.id,
+      articleTitle: article.value.articleTitle,
+      categoryId: article.value.categoryId,
+      articleCover: article.value.articleCover,
+      articleContent: article.value.articleContent,
+      articleTop: article.value.articleTop,
+      articleStatus: article.value.status
+    }).then(() => {
+      $process.tipShow.success("更新文章成功");
+      afterPublish();
+    })
+  }
+
+}
+
+const afterPublish = () => {
+  if (article.value.id === null) {
+    store.removeTab("发布文章");
+  } else {
+    store.removeTab("修改文章");
+  }
+  sessionStorage.removeItem("article");
+  router.push({path: "/article-list"});
 }
 
 const openModel = () => {
@@ -205,7 +282,7 @@ const openModel = () => {
   addOrEditVisible.value = true;
 }
 
-const onUploadImg = () => {
+const onUploadMdImg = () => {
 
 }
 
@@ -213,21 +290,9 @@ const removeCategory = () => {
   article.value.categoryName = null;
 }
 
-const searchCategories = () => {
-
-}
-
-const saveCategory = () => {
-
-}
-
-const handleSelectCategories = (item: string) => {
-  console.log(item);
-  // article.value.categoryName = item.categoryName;
-}
-
-const addCategory = (name: string) => {
-  console.log(name);
+const addCategory = (category: OptionInterface) => {
+  article.value.categoryId = category.id;
+  article.value.categoryName = category.name;
 }
 
 const beforeUpload = () => {
@@ -238,14 +303,10 @@ const uploadCover = () => {
   article.value.articleCover = '';
 }
 
-const saveOrUpdateArticle = () => {
-
-}
-
 watch(() => route.path,
     () => {
       article.value.id = null;
-      article.value.articleTitle = new Date();
+      article.value.articleTitle = "";
       article.value.categoryId = null;
       article.value.categoryName = null;
       article.value.articleContent = "";
@@ -273,27 +334,23 @@ watch(() => route.path,
     background: #fff;
     color: #f56c6c;
   }
+}
 
-  .popover-title {
-    margin-bottom: 1rem;
-    text-align: center;
+.popover-container {
+  margin-top: 1rem;
+  height: 260px;
+  overflow-y: auto;
+
+  .category-item {
+    cursor: pointer;
+    padding: 0.6rem 0.5rem;
   }
 
-  .popover-container {
-    margin-top: 1rem;
-    height: 260px;
-    overflow-y: auto;
-
-    .category-item {
-      cursor: pointer;
-      padding: 0.6rem 0.5rem;
-    }
-
-    .category-item:hover {
-      background-color: #f0f9eb;
-      color: #67c23a;
-    }
+  .category-item:hover {
+    background-color: #f0f9eb;
+    color: #67c23a;
   }
 }
+
 
 </style>

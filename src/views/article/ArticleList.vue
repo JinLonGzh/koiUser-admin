@@ -11,6 +11,9 @@
       <span @click="changeStatus('secret')" :class="isActive('secret')">
         私密
       </span>
+      <span @click="changeStatus('draft')" :class="isActive('draft')">
+        草稿
+      </span>
     </div>
     <!-- 表格操作 -->
     <div class="operation-container">
@@ -284,6 +287,7 @@ import {onMounted, ref, watch} from "vue";
 import api from "@/api";
 import {ArticleDataInterface} from "@/d.ts/api/article";
 import {OptionInterface} from "@/d.ts/api";
+import {ArticleStatusEnum} from "@/config/constant.ts";
 
 const route = useRoute();
 const router = useRouter();
@@ -336,10 +340,13 @@ const changeStatus = (key: string) => {
       status.value = null;
       break;
     case "public":
-      status.value = 0;
+      status.value = ArticleStatusEnum.PUBLIC;
       break;
     case "secret":
-      status.value = 1;
+      status.value = ArticleStatusEnum.SECRET;
+      break;
+    case "draft":
+      status.value = ArticleStatusEnum.DRAFT;
       break;
   }
   pageNo.value = 1;

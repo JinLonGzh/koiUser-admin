@@ -33,12 +33,18 @@ const articleInterface: ArticleInterface = {
     },
     getArticleDetail: async (id) => {
         return await get(`/blog/article/detail?id=${id}`);
+    },
+    addArticle: async (req) => {
+        return await post("/blog/article/add", req);
+    },
+    updateArticle: async (req) => {
+        return await post("/blog/article/update", req);
     }
 }
 
 const categoryInterface: CategoryInterface = {
-    getCategoryOption: async () => {
-        return await get("/blog/category/option");
+    getCategoryOption: async (req) => {
+        return await get("/blog/category/option", req);
     }
 }
 

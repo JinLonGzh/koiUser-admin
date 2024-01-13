@@ -5,6 +5,8 @@ export declare interface ArticleInterface {
     updateArticleTop: (req: ArticleTopInterface) => Promise<CommonResult>;
     deleteArticle: (id: number) => Promise<CommonResult>;
     getArticleDetail: (id: number) => Promise<CommonResult>;
+    addArticle: (req: ArticleAddInterface) => Promise<CommonResult>;
+    updateArticle: (req: ArticleUpdateInterface) => Promise<CommonResult>;
 }
 
 interface ArticleQueryInterface extends PageInterface {
@@ -29,4 +31,23 @@ interface ArticleDataInterface {
     viewCount: number;
     createTime: Record<string, unknown>;
     updateTime: Record<string, unknown>;
+}
+
+interface ArticleAddInterface {
+    articleTitle: string;
+    categoryId: number | null;
+    articleCover: string;
+    articleContent: string;
+    articleTop: number;
+    articleStatus: number;
+}
+
+interface ArticleUpdateInterface {
+    id: number;
+    articleTitle: string;
+    categoryId: number | null;
+    articleCover: string;
+    articleContent: string;
+    articleTop: number;
+    articleStatus: number;
 }

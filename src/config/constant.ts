@@ -3,3 +3,9 @@ export enum UrlReqType {
     "path",
     "mix"
 }
+
+export enum ArticleStatusEnum {
+    "PUBLIC",
+    "SECRET",
+    "DRAFT"
+}
