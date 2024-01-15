@@ -45,6 +45,9 @@ const articleInterface: ArticleInterface = {
 const categoryInterface: CategoryInterface = {
     getCategoryOption: async (req) => {
         return await get("/blog/category/option", req);
+    },
+    getCategoryList: async (req) => {
+        return await get("/blog/category/page", req);
     }
 }
 

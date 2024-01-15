@@ -175,11 +175,11 @@
       <el-table-column
           prop="createTime"
           label="发表时间"
-          width="130"
+          width="200"
           align="center"
       >
         <template #default="scope">
-          <i class="el-icon-time" style="margin-right:5px"/>
+          <el-icon style="margin-right:5px"><Clock /></el-icon>
           {{ scope.row.createTime }}
         </template>
       </el-table-column>
@@ -187,11 +187,11 @@
       <el-table-column
           prop="updateTime"
           label="更新时间"
-          width="130"
+          width="200"
           align="center"
       >
         <template #default="scope">
-          <i class="el-icon-time" style="margin-right:5px"/>
+          <el-icon style="margin-right:5px"><Clock /></el-icon>
           {{ scope.row.updateTime }}
         </template>
       </el-table-column>
@@ -209,7 +209,7 @@
         </template>
       </el-table-column>
       <!-- 列操作 -->
-      <el-table-column label="操作" align="center" width="150">
+      <el-table-column fixed="right" label="操作" align="center" width="150">
         <template #default="scope">
           <el-button
               type="primary"
@@ -281,7 +281,7 @@
 
 <script setup lang="ts">
 
-import {Search, Download, Delete, Upload, Warning} from '@element-plus/icons-vue'
+import {Search, Download, Delete, Upload, Warning, Clock} from '@element-plus/icons-vue'
 import {useRoute, useRouter} from "vue-router";
 import {onMounted, ref, watch} from "vue";
 import api from "@/api";
@@ -329,7 +329,7 @@ const listArticlePage = () => {
 }
 
 const getCategoryOption = () => {
-  api.getCategoryOption().then(({data}) => {
+  api.getCategoryOption({keywords: null}).then(({data}) => {
     categoryList.value = data;
   })
 }

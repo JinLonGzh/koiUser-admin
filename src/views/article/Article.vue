@@ -83,7 +83,7 @@
           <el-upload
               class="upload-cover"
               drag
-              action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+              action="http://static/koicode.cn"
               multiple
               :before-upload="beforeUpload"
               :on-success="uploadCover"
@@ -296,7 +296,7 @@ const addCategory = (category: OptionInterface) => {
 }
 
 const beforeUpload = () => {
-  article.value.articleCover = '';
+
 }
 
 const uploadCover = () => {
