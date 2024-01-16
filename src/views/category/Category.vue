@@ -20,6 +20,10 @@
       >
         批量删除
       </el-button>
+      <!-- 刷新按钮 -->
+      <el-tooltip effect="dark" content="刷新" placement="top">
+        <el-button size="small" circle :icon="Refresh" @click="refresh" />
+      </el-tooltip>
       <!-- 条件筛选 -->
       <div style="margin-left:auto">
         <el-input
@@ -130,7 +134,7 @@ import {useRoute, useRouter} from "vue-router";
 import {inject, onMounted, ref} from "vue";
 import api from "@/api";
 import {CategoryDataInterface} from "@/d.ts/api/category";
-import {CirclePlus, Delete, Search, Clock} from "@element-plus/icons-vue";
+import {CirclePlus, Delete, Search, Clock, Refresh} from "@element-plus/icons-vue";
 import {ProcessInterface} from "@/d.ts/modules/process";
 import {FormInstance} from "element-plus";
 
@@ -249,6 +253,10 @@ const pageNoChange = (current: number) => {
   listCategory();
 }
 
+const refresh = () => {
+  loading.value = true;
+  listCategory();
+}
 
 </script>
 

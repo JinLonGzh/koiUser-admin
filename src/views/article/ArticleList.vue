@@ -74,6 +74,9 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
+      <el-tooltip effect="dark" content="刷新" placement="top">
+        <el-button size="small" circle :icon="Refresh" @click="refresh" />
+      </el-tooltip>
       <!-- 条件筛选 -->
       <div style="margin-left:auto">
         <!-- 分类 -->
@@ -281,7 +284,7 @@
 
 <script setup lang="ts">
 
-import {Search, Download, Delete, Upload, Warning, Clock} from '@element-plus/icons-vue'
+import {Search, Download, Delete, Upload, Warning, Clock, Refresh} from '@element-plus/icons-vue'
 import {useRoute, useRouter} from "vue-router";
 import {inject, onMounted, ref, watch} from "vue";
 import api from "@/api";
@@ -422,6 +425,11 @@ const deleteArticles = () => {
 
 const exportArticles = () => {
   exportFormVisible.value = false;
+}
+
+const refresh = () => {
+  loading.value = true;
+  listArticlePage();
 }
 </script>
 
