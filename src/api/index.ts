@@ -48,6 +48,15 @@ const categoryInterface: CategoryInterface = {
     },
     getCategoryList: async (req) => {
         return await get("/blog/category/page", req);
+    },
+    addCategory: async (req) => {
+        return await post("/blog/category/add", req);
+    },
+    updateCategory: async (req) => {
+        return await post("/blog/category/update", req);
+    },
+    deleteCategory: async (id) => {
+        return await del(`/blog/category/delete?id=${id}`);
     }
 }
 

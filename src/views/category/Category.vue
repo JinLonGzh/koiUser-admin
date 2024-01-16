@@ -61,14 +61,18 @@
       <!-- 分类创建时间 -->
       <el-table-column prop="createTime" label="创建时间" align="center" width="200">
         <template #default="scope">
-          <el-icon style="margin-right:5px"><Clock /></el-icon>
+          <el-icon style="margin-right:5px">
+            <Clock/>
+          </el-icon>
           {{ scope.row.createTime }}
         </template>
       </el-table-column>
       <!-- 分类更新时间 -->
       <el-table-column prop="updateTime" label="更新时间" align="center" width="200">
         <template #default="scope">
-          <el-icon style="margin-right:5px"><Clock /></el-icon>
+          <el-icon style="margin-right:5px">
+            <Clock/>
+          </el-icon>
           {{ scope.row.updateTime }}
         </template>
       </el-table-column>
@@ -106,14 +110,14 @@
     />
     <!-- 添加编辑对话框 -->
     <el-dialog v-model="addOrUpdateFormVisible" :title="addOrUpdateFormTitle" width="30%">
-      <el-form label-width="80px" size="small" :model="formDate">
-        <el-form-item label="分类名">
-          <el-input v-model="formDate.categoryName" style="width:220px"/>
+      <el-form label-width="80px" size="small" :model="formData" :rules="rules" ref="ruleFormRef">
+        <el-form-item label="分类名" prop="categoryName">
+          <el-input v-model="formData.categoryName" style="width:220px"/>
         </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="addOrUpdateFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addOrEditCategory">
+        <el-button type="primary" @click="addOrEditCategory(ruleFormRef)">
           确 定
         </el-button>
       </template>
@@ -123,13 +127,17 @@
 
 <script setup lang="ts">
 import {useRoute, useRouter} from "vue-router";
-import {onMounted, ref} from "vue";
+import {inject, onMounted, ref} from "vue";
 import api from "@/api";
 import {CategoryDataInterface} from "@/d.ts/api/category";
 import {CirclePlus, Delete, Search, Clock} from "@element-plus/icons-vue";
+import {ProcessInterface} from "@/d.ts/modules/process";
+import {FormInstance} from "element-plus";
 
 const route = useRoute();
 const router = useRouter();
+const $process = inject<ProcessInterface>("$process")!;
+const ruleFormRef = ref<FormInstance>()
 
 const deleteFormVisible = ref(false);
 const addOrUpdateFormVisible = ref(false);
@@ -138,7 +146,7 @@ const loading = ref(true);
 
 const categoryIdList = ref<Array<number>>([]);
 const categoryList = ref<Array<CategoryDataInterface>>([]);
-const formDate = ref({
+const formData = ref({
   id: null,
   categoryName: ""
 })
@@ -165,13 +173,13 @@ const listCategory = () => {
   })
 }
 
-const openModel = (item: CategoryDataInterface) => {
+const openModel = (item: CategoryDataInterface | null) => {
   if (item != null) {
-    formDate.value = JSON.parse(JSON.stringify(item));
+    formData.value = JSON.parse(JSON.stringify(item));
     addOrUpdateFormTitle.value = "修改分类";
   } else {
-    formDate.value.id = null;
-    formDate.value.categoryName = "";
+    formData.value.id = null;
+    formData.value.categoryName = "";
     addOrUpdateFormTitle.value = "添加分类";
   }
   addOrUpdateFormVisible.value = true;
@@ -190,12 +198,46 @@ const searchCategories = () => {
 }
 
 const deleteCategory = (id: number) => {
-
+  api.deleteCategory(id).then(() => {
+    listCategory();
+    $process.tipShow.success("删除成功");
+  })
 }
 
-const addOrEditCategory = () => {
-
+const addOrEditCategory = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  await formEl.validate((valid, fields) => {
+    if (valid) {
+      if (formData.value.id == null) {
+        // 添加
+        api.addCategory({
+          categoryName: formData.value.categoryName
+        }).then(() => {
+          listCategory();
+          $process.tipShow.success("添加成功");
+        })
+      } else {
+        // 修改
+        api.updateCategory({
+          id: formData.value.id,
+          categoryName: formData.value.categoryName
+        }).then(() => {
+          listCategory();
+          $process.tipShow.success("修改成功");
+        })
+      }
+      addOrUpdateFormVisible.value = false;
+    } else {
+      $process.tipShow.warn("请填写完整信息");
+    }
+  })
 }
+
+const rules = {
+  categoryName: [
+    {required: true, message: '请输入分类名', trigger: 'blur'}
+  ]
+};
 
 const pageSizeChange = (size: number) => {
   pageSize.value = size;

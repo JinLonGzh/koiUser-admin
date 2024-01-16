@@ -283,14 +283,16 @@
 
 import {Search, Download, Delete, Upload, Warning, Clock} from '@element-plus/icons-vue'
 import {useRoute, useRouter} from "vue-router";
-import {onMounted, ref, watch} from "vue";
+import {inject, onMounted, ref, watch} from "vue";
 import api from "@/api";
 import {ArticleDataInterface} from "@/d.ts/api/article";
 import {OptionInterface} from "@/d.ts/api";
 import {ArticleStatusEnum} from "@/config/constant.ts";
+import {ProcessInterface} from "@/d.ts/modules/process";
 
 const route = useRoute();
 const router = useRouter();
+const $process = inject<ProcessInterface>("$process")!;
 
 const activeStatus = ref("all");
 const deleteFormVisible = ref(false);
@@ -388,7 +390,7 @@ const changeTop = (article: ArticleDataInterface) => {
 
 const editArticle = (id: number) => {
   router.push({
-    path: "/updateArticle",
+    path: "/update-article",
     query: {
       id: id
     }
@@ -399,6 +401,7 @@ const deleteArticle = (id: number) => {
   if (id != null) {
     api.deleteArticle(id).then(() => {
       listArticlePage();
+      $process.tipShow.success("删除成功");
     })
   }
 }
