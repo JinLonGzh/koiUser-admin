@@ -256,6 +256,7 @@ const pageNoChange = (current: number) => {
 const refresh = () => {
   loading.value = true;
   listCategory();
+  $process.tipShow.success("刷新成功");
 }
 
 </script>

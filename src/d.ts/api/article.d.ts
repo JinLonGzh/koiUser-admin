@@ -1,6 +1,6 @@
 import {CommonResult, PageInterface} from "@/d.ts/api/index";
 
-export declare interface ArticleInterface {
+export declare interface ApiArticleInterface {
     pageArticle: (req: ArticleQueryInterface) => Promise<CommonResult>;
     updateArticleTop: (req: ArticleTopInterface) => Promise<CommonResult>;
     deleteArticle: (id: number) => Promise<CommonResult>;

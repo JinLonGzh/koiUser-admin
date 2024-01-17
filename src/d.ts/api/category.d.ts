@@ -1,6 +1,6 @@
 import {CommonResult, PageInterface} from "@/d.ts/api/index";
 
-export declare interface CategoryInterface {
+export declare interface ApiCategoryInterface {
     getCategoryOption: (req: CategoryQueryInterface) => Promise<CommonResult>;
     getCategoryList: (req: CategoryPageQueryInterface) => Promise<CommonResult>;
     addCategory: (req: CategoryAddInterface)=> Promise<CommonResult>;

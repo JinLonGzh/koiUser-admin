@@ -1,18 +1,19 @@
 import {ApiObject} from "@/d.ts/api";
 import {del, get, post, put} from "@/utils/request.ts";
-import {MenuInterface} from "@/d.ts/api/menu";
-import {AdminInterface} from "@/d.ts/api/admin";
-import {ArticleInterface} from "@/d.ts/api/article";
-import {CategoryInterface} from "@/d.ts/api/category";
+import {ApiMenuInterface} from "@/d.ts/api/menu";
+import {ApiAdminInterface} from "@/d.ts/api/admin";
+import {ApiArticleInterface} from "@/d.ts/api/article";
+import {ApiCategoryInterface} from "@/d.ts/api/category";
+import {ApiTalkInterface} from "@/d.ts/api/talk";
 
 
-const menuInterface: MenuInterface = {
+const apiMenuInterface: ApiMenuInterface = {
     listUserMenus: async () => {
         return await get("/system/menu/user");
     }
 }
 
-const adminInterface: AdminInterface = {
+const apiAdminInterface: ApiAdminInterface = {
     login: async (req) => {
         return await post("/login", req);
     },
@@ -21,7 +22,7 @@ const adminInterface: AdminInterface = {
     }
 }
 
-const articleInterface: ArticleInterface = {
+const apiArticleInterface: ApiArticleInterface = {
     pageArticle: async (req) => {
         return await get("/blog/article/page", req);
     },
@@ -42,7 +43,7 @@ const articleInterface: ArticleInterface = {
     }
 }
 
-const categoryInterface: CategoryInterface = {
+const apiCategoryInterface: ApiCategoryInterface = {
     getCategoryOption: async (req) => {
         return await get("/blog/category/option", req);
     },
@@ -60,11 +61,35 @@ const categoryInterface: CategoryInterface = {
     }
 }
 
+const apiTalkInterface: ApiTalkInterface = {
+    pageTalk: async (req) => {
+        return await get("/blog/talk/page", req);
+    },
+    addTalk: async (req) => {
+        return await post("/blog/talk/add", req);
+    },
+    deleteTalk: async (id) => {
+        return await del(`/blog/talk/delete?id=${id}`);
+    },
+    getTalkDetail: async (id) => {
+        return await get(`/blog/talk/detail?id=${id}`);
+    },
+    updateTalk: async (req) => {
+        return await post("/blog/talk/update", req);
+    },
+    updateTalkTop: async (req) => {
+        return await post("/blog/talk/top", req);
+    }
+
+}
+
+
 const api: ApiObject = {
-    ...menuInterface,
-    ...adminInterface,
-    ...articleInterface,
-    ...categoryInterface
+    ...apiMenuInterface,
+    ...apiAdminInterface,
+    ...apiArticleInterface,
+    ...apiCategoryInterface,
+    ...apiTalkInterface
 }
 
 export default api;

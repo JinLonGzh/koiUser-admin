@@ -1,6 +1,6 @@
 import {CommonResult} from "@/d.ts/api/index.d.ts";
 
-export declare interface MenuInterface {
+export declare interface ApiMenuInterface {
     listUserMenus: () => Promise<CommonResult>;
 }
 

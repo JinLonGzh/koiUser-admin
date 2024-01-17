@@ -1,7 +1,8 @@
-import {AdminInterface} from "@/d.ts/api/admin.d.ts";
-import {MenuInterface} from "@/d.ts/api/menu";
-import {ArticleInterface} from "@/d.ts/api/article";
-import {CategoryInterface} from "@/d.ts/api/category";
+import {ApiAdminInterface} from "@/d.ts/api/admin.d.ts";
+import {ApiMenuInterface} from "@/d.ts/api/menu";
+import {ApiArticleInterface} from "@/d.ts/api/article";
+import {ApiCategoryInterface} from "@/d.ts/api/category";
+import {ApiTalkInterface} from "@/d.ts/api/talk";
 
 export declare interface CommonResult {
     code: number;
@@ -21,10 +22,11 @@ interface OptionInterface {
 }
 
 export declare interface ApiObject extends
-    MenuInterface,
-    AdminInterface,
-    ArticleInterface,
-    CategoryInterface
+    ApiMenuInterface,
+    ApiAdminInterface,
+    ApiArticleInterface,
+    ApiCategoryInterface,
+    ApiTalkInterface
 {}
 
 

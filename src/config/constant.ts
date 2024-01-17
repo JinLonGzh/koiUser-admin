@@ -9,3 +9,8 @@ export enum ArticleStatusEnum {
     "SECRET",
     "DRAFT"
 }
+
+export enum CommonStatusEnum {
+    "ENABLE",
+    "DISABLE"
+}

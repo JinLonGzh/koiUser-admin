@@ -430,6 +430,7 @@ const exportArticles = () => {
 const refresh = () => {
   loading.value = true;
   listArticlePage();
+  $process.tipShow.success("刷新成功");
 }
 </script>
 
