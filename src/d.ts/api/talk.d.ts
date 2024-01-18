@@ -31,7 +31,7 @@ interface TalkDataInterface {
 
 interface TalkAddInterface {
     content: string;
-    imageList: Record<string, unknown>[];
+    images: string;
     talkTop: number;
     status: number;
 }
@@ -39,7 +39,7 @@ interface TalkAddInterface {
 interface TalkUpdateInterface {
     id: number;
     content: string;
-    imageList: Record<string, unknown>[];
+    images: string;
     talkTop: number;
     status: number;
 }
