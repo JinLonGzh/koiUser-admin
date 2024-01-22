@@ -98,6 +98,7 @@ import {UploadFilled, ArrowDown, Plus} from "@element-plus/icons-vue";
 import {UploadUserFile} from "element-plus";
 import {ProcessInterface} from "@/d.ts/modules/process";
 import {useStore} from "@/store";
+import axios from "axios";
 
 const route = useRoute();
 const router = useRouter();
@@ -137,9 +138,29 @@ onMounted(() => {
   }
 })
 
-const onUploadMdImg = () => {
+const onUploadMdImg = async (files: any, callback: any) => {
+  const res = await Promise.all(
+      files.map((file: any) => {
+        return new Promise((rev, rej) => {
+          const form = new FormData();
+          form.append('file', file);
 
-}
+          axios
+              .post('/admin-api/system/file/upload-md', form, {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
+              })
+              .then((res) => rev(res))
+              .catch((error) => rej(error));
+        });
+      })
+  );
+
+  callback(res.map((item) => {
+    return item.data.data;
+  }));
+};
 
 const beforeUpload = (rawFile: any) => {
   console.log(rawFile.size);

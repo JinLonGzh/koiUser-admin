@@ -82,8 +82,9 @@
         <el-form-item label="上传封面">
           <el-upload
               class="upload-cover"
+              :show-file-list="false"
               drag
-              action="http://static/koicode.cn"
+              action="/admin-api/system/file/upload-cover"
               multiple
               :before-upload="beforeUpload"
               :on-success="uploadCover"
@@ -139,9 +140,10 @@ import api from "@/api";
 import {ProcessInterface} from "@/d.ts/modules/process";
 import {MdEditor} from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
-import {OptionInterface} from "@/d.ts/api";
+import {CommonResult, OptionInterface} from "@/d.ts/api";
 import {ArticleStatusEnum} from "@/config/constant.ts";
 import {useStore} from "@/store";
+import axios from "axios";
 
 const componentKey = ref(0);
 const route = useRoute();
@@ -282,9 +284,29 @@ const openModel = () => {
   addOrEditVisible.value = true;
 }
 
-const onUploadMdImg = () => {
+const onUploadMdImg = async (files: any, callback: any) => {
+  const res = await Promise.all(
+      files.map((file: any) => {
+        return new Promise((rev, rej) => {
+          const form = new FormData();
+          form.append('file', file);
 
-}
+          axios
+              .post('/admin-api/system/file/upload-md', form, {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
+              })
+              .then((res) => rev(res))
+              .catch((error) => rej(error));
+        });
+      })
+  );
+
+  callback(res.map((item) => {
+    return item.data.data;
+  }));
+};
 
 const removeCategory = () => {
   article.value.categoryName = null;
@@ -299,8 +321,9 @@ const beforeUpload = () => {
 
 }
 
-const uploadCover = () => {
-  article.value.articleCover = '';
+const uploadCover = (response: CommonResult) => {
+  console.log(response);
+  article.value.articleCover = response.data;
 }
 
 watch(() => route.path,

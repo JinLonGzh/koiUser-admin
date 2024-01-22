@@ -7,8 +7,7 @@ import {ApiTalkInterface} from "@/d.ts/api/talk";
 export declare interface CommonResult {
     code: number;
     msg: string;
-
-    [propName: string]: any;
+    data: any;
 }
 
 interface PageInterface {
