@@ -114,7 +114,7 @@
     />
     <!-- 添加编辑对话框 -->
     <el-dialog v-model="addOrUpdateFormVisible" :title="addOrUpdateFormTitle" width="30%">
-      <el-form label-width="80px" size="small" :model="formData" :rules="rules" ref="ruleFormRef">
+      <el-form label-width="80px" size="default" :model="formData" :rules="rules" ref="ruleFormRef">
         <el-form-item label="分类名" prop="categoryName">
           <el-input v-model="formData.categoryName" style="width:220px"/>
         </el-form-item>

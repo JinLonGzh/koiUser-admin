@@ -5,6 +5,7 @@ import {ApiAdminInterface} from "@/d.ts/api/admin";
 import {ApiArticleInterface} from "@/d.ts/api/article";
 import {ApiCategoryInterface} from "@/d.ts/api/category";
 import {ApiTalkInterface} from "@/d.ts/api/talk";
+import {ApiWebsiteConfigInterface} from "@/d.ts/api/websiteConfig";
 
 
 const apiMenuInterface: ApiMenuInterface = {
@@ -83,13 +84,29 @@ const apiTalkInterface: ApiTalkInterface = {
 
 }
 
+const apiWebsiteConfigInterface: ApiWebsiteConfigInterface = {
+    getConfigPage: async (req) => {
+        return await get("/system/config/page", req);
+    },
+    addConfig: async (req) => {
+        return await post("/system/config/add", req);
+    },
+    updateConfig: async (req) => {
+        return await post("/system/config/update", req);
+    },
+    deleteConfig: async (id) => {
+        return await del(`/system/config/delete?id=${id}`);
+    }
+}
+
 
 const api: ApiObject = {
     ...apiMenuInterface,
     ...apiAdminInterface,
     ...apiArticleInterface,
     ...apiCategoryInterface,
-    ...apiTalkInterface
+    ...apiTalkInterface,
+    ...apiWebsiteConfigInterface
 }
 
 export default api;
