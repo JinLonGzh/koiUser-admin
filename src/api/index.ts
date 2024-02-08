@@ -11,6 +11,9 @@ import {ApiWebsiteConfigInterface} from "@/d.ts/api/websiteConfig";
 const apiMenuInterface: ApiMenuInterface = {
     listUserMenus: async () => {
         return await get("/system/menu/user");
+    },
+    listMenus: async (req) => {
+        return await get("/system/menu/list");
     }
 }
 

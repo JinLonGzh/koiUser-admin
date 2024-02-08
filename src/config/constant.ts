@@ -14,3 +14,10 @@ export enum CommonStatusEnum {
     "ENABLE",
     "DISABLE"
 }
+
+export enum MenuTypeEnum {
+    "NULL",
+    "DIR",
+    "MENU",
+    "BUTTON"
+}
