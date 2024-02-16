@@ -14,6 +14,15 @@ const apiMenuInterface: ApiMenuInterface = {
     },
     listMenus: async (req) => {
         return await get("/system/menu/list");
+    },
+    addMenu: async (req) => {
+        return await post("/system/menu/add", req);
+    },
+    updateMenu: async (req) => {
+        return await post("/system/menu/update", req);
+    },
+    deleteMenu: async (id) => {
+        return await del(`/system/menu/delete?id=${id}`);
     }
 }
 
